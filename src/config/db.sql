@@ -1,0 +1,101 @@
+CREATE DATABASE IF NOT EXISTS diredegd_mydb;
+USE diredegd_mydb;
+-- Users table
+CREATE TABLE IF NOT EXISTS users (
+    id VARCHAR(36) PRIMARY KEY,
+    name VARCHAR(255),
+    email VARCHAR(255) NOT NULL UNIQUE,
+    phone VARCHAR(255),
+    password VARCHAR(255),
+    image BLOB,
+    isDeleted BOOLEAN DEFAULT FALSE,
+    role VARCHAR(255) DEFAULT 'EMPLOYEE',
+    location VARCHAR(255),
+    isActive BOOLEAN DEFAULT false,
+    joinedAt TIMESTAMP,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+-- Customers table
+CREATE TABLE IF NOT EXISTS customers (
+    id VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(255) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    weight FLOAT DEFAULT NULL,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+-- Items table
+CREATE TABLE IF NOT EXISTS items (
+    id VARCHAR(50) PRIMARY KEY,
+    description VARCHAR(255) NOT NULL,
+    weight FLOAT NOT NULL,
+    quantity INT NOT NULL,
+    totalPrice FLOAT NOT NULL,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+-- Orders table
+CREATE TABLE IF NOT EXISTS orders (
+    id VARCHAR(50) PRIMARY KEY,
+    employeeId VARCHAR(50) NOT NULL,
+    senderId VARCHAR(50) NOT NULL,
+    receiverId VARCHAR(50) NOT NULL,
+    itemId VARCHAR(50) NOT NULL,
+    isPaid BOOLEAN DEFAULT FALSE,
+    status VARCHAR(255),
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT NULL,
+    FOREIGN KEY (senderId) REFERENCES customers(id),
+    FOREIGN KEY (receiverId) REFERENCES customers(id)
+);
+-- Status table
+CREATE TABLE IF NOT EXISTS status (
+    id VARCHAR(50) PRIMARY KEY,
+    orderId VARCHAR(50) NOT NULL,
+    status VARCHAR(255) NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (orderId) REFERENCES orders(id)
+);
+-- Location table
+CREATE TABLE IF NOT EXISTS location (
+    id VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    country VARCHAR(255) DEFAULT 'ETHIOPIA',
+    code VARCHAR(20) NOT NULL UNIQUE,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+-- Transactions table
+CREATE TABLE IF NOT EXISTS transactions (
+    id VARCHAR(50) PRIMARY KEY,
+    orderId VARCHAR(50) NOT NULL,
+    code VARCHAR(50) NOT NULL UNIQUE,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (orderId) REFERENCES orders(id)
+);
+-- Token table
+CREATE TABLE IF NOT EXISTS token (
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    userId VARCHAR(50),
+    token VARCHAR(2000) NOT NULL
+);
+-- Password Reset table
+CREATE TABLE IF NOT EXISTS password_reset (
+    email VARCHAR(255) PRIMARY KEY,
+    token VARCHAR(2000) NOT NULL,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (email) REFERENCES users(email)
+);
+-- Price table
+CREATE TABLE IF NOT EXISTS price (
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    price INT NOT NULL,
+    supportTel VARCHAR(255) NOT NULL
+);
+-- Constants table
+CREATE TABLE IF NOT EXISTS constants (
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    lastTrxCode INT NOT NULL
+);
